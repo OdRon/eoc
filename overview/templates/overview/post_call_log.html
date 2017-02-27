@@ -1,0 +1,428 @@
+{% extends "overview/index.html" %}
+
+{% block main %}
+    <div class="panel panel-default">
+        <div class="panel-heading" style="background-color:#3c8dbc">
+            <h2 class="panel-title" >Call Log Capture Form</h2>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">{# Div for filling form #}
+                <h4 style="text-align:center; color:#00ff00" id="success"></h4>
+                <h4 style="text-align:center; color:#ff0000" id="error"></h4>
+                <form method="post">{% csrf_token %}
+                    <table class="table table-responsive">
+
+                         <tr>
+                            <td>
+                                Incident Type
+                            </td>
+                            <td>
+
+                           <select name="incident_type" id="incidenttype" onchange="displaydisease()">
+                            <option value="" selected data-default>select an incident</option>
+                            <option value="disease type">disease type</option>
+                            <option value="event type">event type</option>
+                            
+                           </select>
+                            </td><td><h5 style="text-align:center; color:#ff0000" id="incidenterror"></h5></td>
+                        </tr>
+                       
+                        <tr id="dtyperow" style="display:none;">
+                            <td>
+                                Disease Type
+                            </td>
+                            <td>
+
+                           <select name="disease_type" id="diseasetype">
+                            <option value="" selected></option>
+                            {% for dt in disease_type %}
+                             <option value="{{dt.description}}">{{dt.description}}</option>
+                             {% endfor %}
+                           </select>
+                            </td><td><h5 style="text-align:center; color:#ff0000" id="diseaseerror"></h5></td>
+                        </tr>
+                   
+                        <tr id="etyperow" style="display:none;">
+                            <td>
+                                Event Type
+                            </td>
+                            <td>
+                             <select name="event_type" id="eventtype">
+                            <option value="" selected></option>
+                            {% for ett in event_type %}
+                             <option value="{{ett.description}}">{{ett.description}}</option>
+
+                             {% endfor %}
+                           </select>
+
+                            </td><td><h5 style="text-align:center; color:#ff0000" id="eventtypeerror"></h5></td>
+                        </tr>
+
+
+
+                       
+                        <tr id="ctyrow" style="display:none">
+                            <td>
+                                County
+                            </td>
+                            <td>
+                             <select name="county" id="county" onchange="getsubcounty()">
+                            <option value="" selected></option>
+                            {% for cty in county %}
+                             <option value="{{cty.description}}">{{cty.description}}</option>
+                             {% endfor %}
+                           </select>
+
+                            </td>
+                            <td><h5 style="text-align:center; color:#ff0000" id="countyerror"></h5></td>
+                        </tr>
+
+
+                        <tr id="subctyrow" style="display:none">
+                            <td>
+                                Sub_county
+                            </td>
+                            <td>
+                             <select name="subcounty" id="subcounty">
+                            <option value="" selected disabled>select county</option>
+                            
+                           </select>
+
+                            </td>
+                            <td><h5 style="text-align:center; color:#ff0000" id="subcountyerror"></h5></td>
+                        </tr>
+
+                        <tr id="locrow" style="display:none">
+                            <td>
+                                Location
+                            </td>
+                            <td>
+
+                            <input type="text" name="location" size="45" placeholder="location" id="location"/>
+                            </td><td><h5 style="text-align:center; color:#ff0000" id="locationerror"></h5></td>
+                        </tr>
+                        <tr id="callernamerow" style="display:none">
+                            <td>
+                                Caller Name
+                            </td>
+
+                            <td>
+
+                                <input type="text" name="caller_name" size="45" placeholder="caller name" id="callername"/>
+
+                            </td>
+                            <td><h5 style="text-align:center; color:#ff0000" id="callernameerror"></h5></td>
+                        </tr>
+                        <tr id="callernumberrow" style="display:none">
+                            <td>
+                                Caller Number
+                            </td>
+                            <td>
+
+                             <input type="number" name="caller_number" size="45" placeholder="caller number" id="callernumber"/>
+
+                            </td>
+                            <td><h5 style="text-align:center; color:#ff0000" id="callernumbererror"></h5></td>
+                        </tr>
+                        <tr id="datereportedrow" style="display:none">
+                            <td>
+                                Date Reported
+                            </td>
+                            <td>
+
+                             <input type="date" name="date_reported" placeholder="date reported" size="45" id="datereported"/>
+                            </td>
+                            <td><h5 style="text-align:center; color:#ff0000" id="datereportederror"></h5></td>
+                        </tr>
+                        <tr id="descrow" style="display:none">
+                            <td>
+                                Description
+                            </td>
+                            <td>
+
+
+                           <textarea rows="5" cols="43" name="description" placeholder="description" id="description"></textarea>
+                            </td>
+                            <td><h5 style="text-align:center; color:#ff0000" id="descriptionerror"></h5></td>
+                        </tr>
+                        <tr id="actiontakenrow" style="display:none">
+
+                            <td>
+                               Action Taken
+                            </td>
+                            <td>
+                             
+                            <textarea rows="5" cols="43" name="action_taken" placeholder="action taken" id="actiontaken"></textarea>
+                            </td>
+                            <td><h5 style="text-align:center; color:#ff0000" id="actiontakenerror"></h5></td>
+                        </tr>
+                        <tr id="submitrow" style="display:none">
+                            <td><input type="button" onclick="testing()" class="btn btn-primary btn-lg btn-block" value="Save Details"/></td>
+                        </tr>
+
+                    </div>
+
+                    </table>
+                    
+                </form>
+            </div>
+            <div class="col-lg-6">{# Div for editing form #}
+            </div>
+        </div>
+    </div>
+
+     <script>
+
+    function testing(){
+
+    $('#diseaseerror').html('');
+    $('#eventtypeerror').html('');
+    $('#countyerror').html('');
+    $('#locationerror').html('');
+    $('#callernameerror').html('');
+    $('#callernumbererror').html('');
+    $('#datereportederror').html('');
+    $('#descriptionerror').html('');
+    $('#actiontakenerror').html('');
+     $('#subcountyerror').html('');
+
+
+    var diseasetype=$('#diseasetype').val();
+    var eventtype=$('#eventtype').val();
+    var county=$('#county').val();
+    var subcounty=$('#subcounty').val();
+    var location=$('#location').val();
+    var callername=$('#callername').val();
+    var callernumber=$('#callernumber').val();
+    var datereported=$('#datereported').val();
+    var description=$('#description').val();
+    var actiontaken=$('#actiontaken').val();
+
+    var dtype=$('#dtyperow');
+    // $("#id").css("display", "none");
+    var etype=$('#etyperow');
+    if($("#dtyperow").css("display")== "none"){
+        //alert("disease type invisible");
+        diseasetype="none";
+    }
+    else if($("#etyperow").css("display")=="none"){
+
+      // alert("event type invisible");
+      eventtype="none";
+
+    }
+
+    if(!($("#dtyperow").css("display")== "none") && diseasetype===''){
+    $('#diseaseerror').html('diseasetype required');
+    $('#success').html("");
+
+    }if(!($("#etyperow").css("display")=="none") && eventtype===''){
+
+      $('#eventtypeerror').html('event type required');
+      $('#success').html("");
+    }
+
+    if(county===''){
+
+      $('#countyerror').html('county required');
+      $('#success').html("");
+
+    }
+    if(county===''){
+
+      $('#subcountyerror').html('subcounty required');
+      $('#success').html("");
+
+    }
+    if(location===''){
+    $('#locationerror').html('location required');
+    $('#success').html("");
+
+    }
+    if(callername===''){
+
+        $('#callernameerror').html('caller name required');
+        $('#success').html("");
+
+    }if(callernumber===''){
+
+        $('#callernumbererror').html('caller number required');
+        $('#success').html("");
+
+
+    }
+    if(datereported===''){
+
+     $('#datereportederror').html('date reported required');
+     $('#success').html("");
+
+    }
+    if(description===''){
+     $('#descriptionerror').html('description required');
+     $('#success').html("");
+
+    }
+    if(actiontaken===''){
+
+      $('#actiontakenerror').html('action taken required');
+
+      $('#success').html("");
+    }
+
+
+    if(!(diseasetype===''||eventtype===''||county===''||subcounty===''||location===''||callername===''||callernumber===''||datereported===''||description===''||actiontaken==='')){
+
+    // else{
+        $.ajax({
+         url:"/call_log_create_submit/",
+         type:"POST",
+         datatype:"json",
+         data:{disease_type:diseasetype,event_type:eventtype,county:county,subcounty:subcounty,location:location,caller_name:callername,caller_number:callernumber,date_reported:datereported,description:description,action_taken:actiontaken,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+
+            success:function(){
+                $('#success').html("success in submission");
+                $('#error').html("");
+                $('#diseasetype').val('');
+                $('#eventtype').val('');
+                $('#county').val('');
+                $('#location').val('');
+                $('#callername').val('');
+                $('#callernumber').val('');
+                $('#datereported').val('');
+                $('#description').val('');
+                $('#actiontaken').val('');
+                var options = '<option value="" selected disabled>select county</option>';
+                $('#subcounty').html(options);
+
+
+
+            },
+            error:function(){
+
+                $('#error').html("error in submission, try again");
+                $('#success').html("");
+
+            }
+        });
+      // }
+
+  }
+
+
+}
+
+
+function displaydisease(){
+
+
+    var dtype=document.getElementById('dtyperow');
+    var etype=document.getElementById('etyperow');
+    var ctyrow=document.getElementById('ctyrow');
+    var locrow=document.getElementById('locrow');
+    var callernamerow=document.getElementById('callernamerow');
+    var callernumberrow=document.getElementById('callernumberrow');
+    var datereportedrow=document.getElementById('datereportedrow');
+    var descrow=document.getElementById('descrow');
+    var actiontakenrow=document.getElementById('actiontakenrow');
+    var submitrow=document.getElementById('submitrow');
+    var subctyrow=document.getElementById('subctyrow');
+
+
+    var y=document.getElementById('incidenttype');
+
+   // x.style.display="table-row";
+
+   var myval=y.value;
+
+    if(myval=="disease type"){
+
+        dtype.style.display="table-row";
+        etype.style.display="none";
+        ctyrow.style.display="table-row";
+        locrow.style.display="table-row";
+        callernamerow.style.display="table-row";
+        callernumberrow.style.display="table-row";
+        datereportedrow.style.display="table-row";
+        descrow.style.display="table-row";
+        actiontakenrow.style.display="table-row";
+        submitrow.style.display="table-row";
+        subctyrow.style.display="table-row";
+
+    }
+    else if(myval=="event type"){
+
+        etype.style.display="table-row";
+        dtype.style.display="none";
+        ctyrow.style.display="table-row";
+        locrow.style.display="table-row";
+        callernamerow.style.display="table-row";
+        callernumberrow.style.display="table-row";
+        datereportedrow.style.display="table-row";
+        descrow.style.display="table-row";
+        actiontakenrow.style.display="table-row";
+        submitrow.style.display="table-row";
+        subctyrow.style.display="table-row";
+    }
+    else{
+
+        etype.style.display="none";
+        dtype.style.display="none";
+        ctyrow.style.display="none";
+        locrow.style.display="none";
+        callernamerow.style.display="none";
+        callernumberrow.style.display="none";
+        datereportedrow.style.display="none";
+        descrow.style.display="none";
+        actiontakenrow.style.display="none";
+        submitrow.style.display="none";
+        subctyrow.style.display="none";
+    }
+}
+
+
+
+function getsubcounty(){
+
+    var county=$('#county').val();
+    $.ajax({
+        url:'/get_subcounty/',
+        type:'POST',
+        datatype:'json',
+        data:{county:county,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(data){
+
+
+        var options = '<option value="" selected disabled>select subcounty</option>';
+        $('#subcounty').html(options);
+
+
+        for(var i=0;i<data.length;i++){
+
+          var options = '<option value="' + data[i].fields['subcounty'] + '">' + data[i].fields['subcounty'] + '</option>';
+          $('#subcounty').append(options);
+
+        }
+
+
+
+
+     },
+     error:function(){
+
+        // alert("error getting data from server");
+        var options = '<option value="" selected disabled>select county</option>';
+        $('#subcounty').html(options);
+
+
+     }
+
+    });
+ }
+
+
+    </script>
+{% endblock %}
+
+ 

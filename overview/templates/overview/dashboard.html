@@ -1,0 +1,702 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jqc-1.12.3/jszip-2.5.0/pdfmake-0.1.18/dt-1.10.12/b-1.2.2/b-flash-1.2.2/b-html5-1.2.2/b-print-1.2.2/datatables.min.js"></script>
+
+    <!--<script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>-->
+{#    <div class="container">#}
+        <div>
+{#            <div class="row">#}
+{#                <div class="col-md-12" >#}
+{#                    <div class="well">#}
+{#                        <h4>EOC  Dashboard <small>National events statistics and more</small></h4>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <h6>Live updates</h6>#}
+{#            <marquee><p style="font-family: Impact; font-size: 12pt; color: #985f0d">Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor!</p></marquee>#}
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" onclick="this.parentNode.parentNode.removeChild(this.parentNode);" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                <strong><i class="fa fa-warning"></i> Live updates!</strong>
+                <marquee onmouseover="this.stop()" onmouseout="this.start()"><p style="font-family: Impact; font-size: 18pt" >
+                    CONFIRMED CALL LOGS:
+                    {% for maq in trl.marquee_call_log %}
+
+                          <a href="/{{ maq.id }}/call_log_view/">{{ maq }}</a>...
+
+                    {% endfor %}
+                   CONFIRMED DISEASES:
+                     {% for maq in trl.marquee_disease %}
+
+                          <a href="/{{ maq.id }}/disease_view/">{{ maq }}</a>...
+
+                    {% endfor %}
+                     CONFIRMED EVENTS:
+                     {% for maq in trl.marquee_events %}
+
+                          <a href="/{{ maq.id }}/event_view/">{{ maq }}</a>
+
+                    {% endfor %}</p>
+                </marquee>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="well" style="border-color: #a94442">
+                        <div class="small-box bg-aqua">
+                            <div class="inner" style="height: 100px; width: 100%; ">
+                                <h4><b>  Disease reported</b></h4>
+                                <h6>{{trl.d_count}} Suspected cases </h6>
+                                <h6>{{trl.d_conf_count}} Confirmed cases </h6>
+                                <h6>6 Mortality</h6>
+
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-bag"></i>
+                            </div>
+                            <button href="#myModal" id="openBtn" data-toggle="modal" class="btn btn-primary">More infor</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" >
+                    <div class="well" style="border-color: #a94442">
+                        <div class="small-box bg-green" >
+                            <div class="inner" style="height: 100px; width: 100%;">
+                                <h4><b>Current Outbreaks</b></h4>
+{#                                <h6>53<sup style="font-size: 10px">%</sup></h6>#}
+                                 <h3> 0 outbreaks</h3>
+{#                                <h6>0 cases mortality</h6>#}
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                            <button href="#" id="openBtn" data-toggle="modal" class="btn btn-primary">More infor</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="well" style="border-color: #a94442">
+                        <div class="small-box bg-yellow">
+                            <div class="inner" style="height: 100px; width: 100%;">
+                             <h4><b>Events </b></h4>
+                                <h6>{{trl.e_count}} Suspected cases</h6>
+                                <h6>{{trl.e_conf_count}} Confirmed cases</h6>
+                                <h6>0 mortality</h6>
+
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-person-add"></i>
+                            </div>
+                            <button href="#" id="openBtn" data-toggle="modal" class="btn btn-primary">More infor</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="well" style="border-color: #a94442">
+                        <div class="small-box bg-red">
+                            <div class="inner" style="height: 100px; width: 100%;">
+                                 <h4><b>Current events</b></h4>
+                                <h3> No events</h3>
+
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-pie-graph"></i>
+                            </div>
+                            <button href="#" id="openBtn" data-toggle="modal" class="btn btn-primary">More infor</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+
+                    <div class="well">
+                         <div class="panel-heading" style="background-color:#3c8dbc">
+                         <h2 class="panel-title" align="center" style="color: #ffffff">Counties with highest call rates in the last 7 days </h2>
+                         </div>
+                        <div id="barContainer" style="height: 300px; width: 100%;">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="well">
+                        <div class="panel-heading" style="background-color:#3c8dbc">
+                         <h2 class="panel-title" align="center" style="color: #ffffff">Highest reported diseases in the last 30 days</h2>
+                         </div>
+                        <div id="piechartContainers" style="height: 300px; width: 100%;">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <div class="row">
+                <div class="col-md-12">
+                    <!--tabs-->
+                    <div class="panel">
+
+                        <div class="tab-content">
+                            <div class="tab-pane active well" id="logs" style="height: 330px; width: 100%;">
+                                <!--<h4 class="tab-header"><i class="fa fa-calendar-o fa-2x"></i> Recent Call Logs</h4>-->
+                                 <div class="panel-heading" style="background-color:#3c8dbc">
+                                   <h2 class="panel-title" align="center" style="color: #ffffff">Disease mappings</h2>
+                                   <div align="right">
+                                    <select name="mydtype" id="mydtype" onchange="populateMap()">
+                                    </select>
+                                   </div>
+                                 </div>
+                                <div id="map_div" style="height:250px;width:auto" ></div>
+                            </div>
+                            <!--<div class="tab-pane well" id="disease" style="height: 330px; width: 100%;">-->
+                                <!--<h4 class="tab-header"><i class="fa fa-calendar-o fa-2x"></i> Recent Diseases Reported</h4>-->
+                                <!--{% include 'overview/includes/limited_Disease_report.html' %}-->
+                            <!--</div>-->
+                            <!--<div class="tab-pane well" id="events" style="height: 330px; width: 100%;">-->
+                                <!--<h4 class="tab-header"><i class="fa fa-calendar-o fa-2x"></i> Recent Events Reported</h4>-->
+                                <!--{% include 'overview/includes/lim_alerts.html' %}-->
+                            <!--</div>-->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+{#    </div>#}
+
+
+
+{#        Modal section #}
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 class="modal-title">Disease reported</h3>
+                </div>
+                <div class="modal-body">
+                    <h5 class="text-center">Diseases reported the past 7 days</h5>
+                    <table class="table table-striped" id="tblGrid">
+                        <thead id="tblHead">
+                        <tr>
+                            <th>Date</th>
+                            <th>County</th>
+                            <th>Caller No</th>
+                            <th>Description</th>
+                            <th class="text-right">Action Taken</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>2016-08-06</td>
+                            <td>1</td>
+                            <td>0721975214</td>
+                            <td>Reported cholera in Kibera, namba nane area, four people are feared dead</td>
+                            <td class="text-right">Response team sent to site</td>
+                        </tr>
+                        <tr>
+                            <td>2016-08-7</td>
+                            <td>5</td>
+                            <td>0732145974</td>
+                            <td>Reported Fire in Kibera, namba nane area, four people are feared dead</td>
+                            <td class="text-right">Fire brigade heading to site</td>
+                        </tr>
+                        <tr>
+                            <td>2016-08-010</td>
+                            <td>10</td>
+                            <td>0715697234</td>
+                            <td>Reported cholera in Kisumu, ten people are feared dead</td>
+                            <td class="text-right">Samples have been collected and taken to lab for testing</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default " data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    {%csrf_token%}
+
+{% endblock %}
+
+{% block script %}
+
+{#       graphs Script section#}
+
+    <script type="text/javascript">
+
+
+
+//            var data = {
+//              series: [5, 3, 4]
+//            };
+//
+//            var sum = function(a, b) { return a + b };
+//
+//            new Chartist.Pie('.chartContainers', data, {
+//              labelInterpolationFnc: function(value) {
+//                return Math.round(value / data.series.reduce(sum) * 100) + '%';
+//              }
+//            });
+//        {  y: 15, legendText:"Msa", indexLabel: "Mombasa" },
+
+
+        //start of line graph
+//            var layout = {
+//                title: '',
+//              height: 320,
+//              width: 480
+//            };
+//            var trace1 = {
+//              x: [1, 2, 3, 4],
+//              y: [10, 15, 13, 17],
+//              type: 'scatter'
+//            };
+//            var trace2 = {
+//              x: [1, 2, 3, 4],
+//              y: [16, 5, 11, 9],
+//              type: 'scatter'
+//            };
+//            var trace3 = {
+//              x: [1, 2, 3, 4],
+//              y: [1, 3, 10, 8],
+//              type: 'scatter'
+//            };
+//        var data = [trace1, trace2,trace3];
+//       Plotly.newPlot('linechartContainers', data);
+
+
+        var disease_report_stat_key = []
+        var disease_report_stat_value = []
+        {% for key, value in trl.disease_report_stat.items %}
+            disease_report_stat_value.push({{value}})
+           disease_report_stat_key.push(['{{ key }}'])
+
+        {% endfor %}
+
+
+        var data = [{
+          values: disease_report_stat_value,
+          labels: disease_report_stat_key,
+          type: 'pie'
+        }];
+
+        var layout = {
+            title: '',
+          height: 300,
+          width: 400
+        };
+
+        //Plotly.newPlot('piechartContainers', data, layout);
+
+
+
+    </script>
+     {#  start of new hichart pie chart  #}
+    <script>//piechart
+        $(function () {
+
+            var high_val = []
+            {% for key, value in trl.disease_report_stat.items %}
+                high_val.push({ name: "{{ key }}" , y: {{ value }} })
+            {% endfor %}
+
+            // Radialize the colors
+            Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function (color) {
+                return {
+                    radialGradient: {
+                        cx: 0.5,
+                        cy: 0.3,
+                        r: 0.7
+                    },
+                    stops: [
+                        [0, color],
+                        [1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+                    ]
+                };
+            });
+
+            // Build the chart
+            Highcharts.chart('piechartContainers', {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            },
+                            connectorColor: 'silver'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Brands',
+                    data: high_val
+                }]
+            });
+        });
+    </script>
+    {#  End of pie chart  #}
+
+    {#  start of new hichart drill down graph  #}
+    <script>
+        $(function () {
+            // Create the chart
+            var valx = []
+            {% for key, value in trl.elements.items %}
+                valx.push({ name: '{{ key }}' , y: {{ value }} , drilldown: '{{ key }}' })
+            {% endfor %}
+
+            Highcharts.chart('barContainer', {
+                chart: {
+                    type: 'column'
+                },
+                xAxis: {
+                    type: 'category'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Number of Calls'
+                    }
+
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y:1f}'
+                        }
+                    }
+                },
+
+                tooltip: {
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:2f}</b> total calls<br/>'
+                },
+
+                series: [{
+                    name: 'County',
+                    colorByPoint: true,
+                    data: valx
+                }],
+            });
+        });
+    </script>
+    {#  end of drill down graph  #}
+    <script type="text/javascript" src="/static/js/canvasjs.min.js"></script>
+       <!--<script>-->
+        <!--$(document).ready(function() {-->
+
+            <!--$('#eoc_events').fullCalendar({-->
+                <!--// enable theme-->
+                <!--theme: true,-->
+                <!--// emphasizes business hours-->
+                <!--businessHours: true,-->
+                <!--// event dragging & resizing-->
+                <!--editable: true,-->
+                <!--// header-->
+                <!--header: {-->
+                  <!--left: 'prev,next today',-->
+                  <!--center: 'title',-->
+                  <!--right: 'month,agendaWeek,agendaDay'-->
+                <!--},-->
+                <!--events: [-->
+                  <!--// all day event-->
+                  <!--{-->
+                    <!--title  : 'Meeting',-->
+                    <!--start  : '2016-11-22'-->
+                  <!--},-->
+                  <!--// long-term event-->
+                  <!--{-->
+                    <!--title  : 'Conference',-->
+                    <!--start  : '2016-11-23',-->
+                    <!--end    : '2016-11-25'-->
+                  <!--},-->
+                  <!--// short term event-->
+                  <!--{-->
+                    <!--title  : 'Dentist',-->
+                    <!--start  : '2016-11-29T11:30:00',-->
+                    <!--end  : '2016-11-29T012:30:00',-->
+                    <!--allDay : false // will make the time show-->
+                  <!--}-->
+                <!--]-->
+            <!--});-->
+        <!--});-->
+    <!--</script>-->
+
+
+
+    <script>
+
+    google.charts.load('current', { 'packages': ['map'] });
+    google.charts.setOnLoadCallback(showmap);
+
+      function showmap(){
+
+          var mydata =new google.visualization.DataTable();
+          mydata.addColumn('number', 'LATITUDE');
+          mydata.addColumn('number', 'LONGITUDE');
+          mydata.addColumn('string', 'NAME');
+          mydata.addColumn('string', 'Marker');
+
+
+
+
+
+      var options = {
+          icons: {
+             default: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png'
+            },
+             police: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png'
+            },
+            referal: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+        mydata.addRow([-1.2921,36.8219,'Nairobi','police']);
+        var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        map.draw(mydata,options);
+
+
+}
+
+
+
+        window.onload=function(){
+//             var valx = []
+//        {% for key, value in trl.elements.items %}
+//            valx.push({ label: "{{ key }}" , y: {{ value }} })
+//{#           valx.push( { label: "{{ elmnt.label }}" , y: {{ elmnt.y }}})#}
+//        {% endfor %}
+//
+//            var chart = new CanvasJS.Chart("barContainer", {
+//                animationEnabled: true,
+//                title:{
+//                    text: ""
+//                },
+//                data: [{
+//                    type: "column", //change type to bar, line, area, pie, etc
+//                    dataPoints: valx
+//{#                            [#}
+//{#                        { label: "Monday", y: 42 },#}
+//{#                        { label: "Tuesday", y: 29 },#}
+//{#                        { label: "Wednesday",  y: 40 },#}
+//{#                        { label: "Thursday",  y: 34 },#}
+//{#                        { label: "Friday", y: 50 },#}
+//{#                        { label: "Saturday",  y: 20 },#}
+//{#                        { label: "Sunday",  y: 8 }#}
+//{##}
+//{#                    ]#}
+//                }
+//                ]
+//            });
+//
+//
+//
+//            chart.render();
+
+    // var county=$('#county').val();
+    $.ajax({
+        url:'/get_diseases/',
+        type:'POST',
+        datatype:'json',
+        data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(data){
+
+
+        var options = '<option value="" selected disabled>select Disease</option>';
+        $('#mydtype').html(options);
+
+
+        for(var i=0;i<data.length;i++){
+           //console.log(data);
+
+          var options = '<option value="' + data[i].fields['description'] + '">' + data[i].fields['description'] + '</option>';
+          $('#mydtype').append(options);
+
+        }
+
+
+
+
+     },
+     error:function(){
+
+        // alert("error getting data from server");
+        var options = '<option value="" selected disabled>select county</option>';
+        $('#subcounty').html(options);
+
+
+     }
+
+    });
+ }
+
+
+     function populateMap(){
+
+
+
+       var dtype=$('#mydtype').val();
+
+        $.ajax({
+
+          url:'/get_disease_cordinates/',
+          type:'POST',
+          datatype:'json',
+          data:{dtype:dtype,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+         success:function(data){
+          //    for(var i=0;i<data.length;i++){
+          //   console.log(data[i]['county__description']);
+          // }
+
+          var mydata =new google.visualization.DataTable();
+          mydata.addColumn('number', 'LATITUDE');
+          mydata.addColumn('number', 'LONGITUDE');
+          mydata.addColumn('string', 'NAME');
+          mydata.addColumn('string', 'Marker');
+
+
+
+
+
+          var options = {
+              icons: {
+                 default: {
+                  normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png',
+                  selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png'
+                },
+                 police: {
+                  normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png',
+                  selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png'
+                },
+                referal: {
+                  normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png',
+                  selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png'
+                }
+              },
+              showTip: true,
+              useMapTypeControl: true,
+              zoomLevel: 7,
+              enableScrollWheel:true,
+              mapType: 'styledMap',
+
+               maps: {
+              // Your custom mapTypeId holding custom map styles.
+              styledMap: {
+                name: 'Styled Map', // This name will be displayed in the map type control.
+                styles: [
+                  {featureType: 'poi.attraction',
+                   stylers: [{color: '#fce8b2'}]
+                  },
+                  {featureType: 'road.highway',
+                   stylers: [{hue: '#0277bd'}, {saturation: -50}]
+                  },
+                  {featureType: 'road.highway',
+                   elementType: 'labels.icon',
+                   stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+                  },
+                  {featureType: 'landscape',
+                   stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+                  }
+            ]}}
+
+
+            };
+
+
+
+         for(var i=0;i<data.length;i++){
+
+            console.log(data[i]['county__description']);
+
+
+            x=data[i]['county__latitude'];//get the longitude from models
+            y=data[i]['county__longitude'];//get latitude from models
+
+            z=data[i]['county__description'];//get the position from models
+            x=parseFloat(x);//convert the longitude to float from string
+            y=parseFloat(y);//convert the latitude to float from string
+            mydata.addRow([x,y,z,'police']);//add the coordinates to the map
+
+          }
+
+
+
+
+          var map = new google.visualization.Map(document.getElementById('map_div'));
+          // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+          map.draw(mydata,options);
+
+         },
+
+
+         error:function(){
+
+          alert("error in getting coordinates, try again");
+
+         }
+
+      });
+     }
+    </script>
+
+
+{% endblock %}

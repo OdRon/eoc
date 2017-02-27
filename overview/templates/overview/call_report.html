@@ -1,0 +1,106 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jqc-1.12.3/jszip-2.5.0/pdfmake-0.1.18/dt-1.10.12/b-1.2.2/b-flash-1.2.2/b-html5-1.2.2/b-print-1.2.2/datatables.min.js"></script>
+    <div class="panel panel-default">
+    <div class="panel-heading" style="background-color:#3c8dbc">
+        <h2 class="panel-title" >Call Log Tabular Report</h2>
+    </div>
+       <!-- <div class="panel-body"> Sample Log Table Data</div>-->
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped nowrap" id="logs_table">
+              <thead style="background-color: #ffffff">
+                <tr>
+                    <th>Date Reported</th>
+                    <th>Disease</th>
+                    <th>Event</th>
+                    <th>Status</th>
+                    <th>County</th>
+                    <th>Sub County</th>
+                    <th>Location</th>
+                    <th>User</th>
+                    <th>Caller Name</th>
+                    <th>Caller No</th>
+                    <th>Description</th>
+                    <th>Action Taken</th>
+                </tr>
+
+                <tr>
+                    <td>Date Reported</td>
+                    <td>Disease</td>
+                    <td>Event</td>
+                    <td>Status</td>
+                    <td>County</td>
+                    <td>Sub County</td>
+                    <td>Location</td>
+                    <td>User</td>
+                    <td>Caller Name</td>
+                    <td>Caller No</td>
+                    <td>Description</td>
+                    <td>Action Taken</td>
+                </tr>
+                </thead>
+
+              <tbody>
+              {% for log in valz.vals %}
+                {% if log.incident_status_id == 2 %}
+                      <tr style="background-color: #a94442">
+                      {% else %}
+                      <tr>
+                  {% endif %}
+                    <td>{{log.date_reported}}</td>
+                    <td>{{log.disease_type.description}}</td>
+                    <td>{{log.event_type.description}}</td>
+                    <td>{{log.incident_status.description}}</td>
+                    <td>{{log.county.description}}</td>
+                    <td>{{log.subcounty.subcounty}}</td>
+                    <td>{{log.location}}</td>
+                    <td>{{log.user.username}}</td>
+                    <td>{{log.caller_name}}</td>
+                    <td>{{log.caller_number}}</td>
+                    <td>{{log.description}}</td>
+                    <td>{{log.action_taken}}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+    $(document).ready(function() {
+    $('#logs_table').DataTable( {
+            "order": [],
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        } );
+
+     // Setup - add a text input to each footer cell
+    $('#logs_table thead td').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    } );
+
+    // DataTable
+    var table = $('#logs_table').DataTable();
+
+    // Apply the search
+    table.columns().every( function () {
+        var that = this;
+
+        $( 'input', this.header() ).on( 'keyup change', function () {
+            if ( that.search() !== this.value ) {
+                that
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+   } );
+    </script>
+
+{% endblock %}

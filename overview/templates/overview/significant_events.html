@@ -1,0 +1,49 @@
+{% extends "overview/main_header.html" %}
+
+{% block main %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading" style="background-color:#7676ff">
+            <h2 class="panel-title" align="center">Significant Event Form</h2>
+        </div>
+
+        <div class="col-md-2">
+        </div>
+
+        <div class="row">
+        <div class="col-md-8">
+            <div class="well">
+                 <h2 style="text-align:center">{{success}}</h2>
+                    <form method="post" action="{% url 'significant_events_create'%}">{% csrf_token %}
+
+
+                        <div class="form-group">
+                            <label for="Significant_events"><b>Date : </b></label>
+                            <input class="form-control" type="date" value="2016-01-01" id="date_created" name="date_created" required>
+                        </div>
+
+{#                        <div id='TextBoxesGroup1'>#}
+{#                            <div id="TextBoxDiv1">#}
+{#                                <label><b>Significant Events #1 :</b> </label><input class="form-control" rows="3" type='textarea' id='textbox' >#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <input type='button' value='Add Field' id='addButton'>#}
+{#                        <input type='button' value='Remove Field' id='removeButton'>#}
+{#                        <input type='button' value='Get TextBox Value' id='getButtonValue'>#}
+
+                        <div class="form-group">
+                            <label for="remarks"><b>Significant Event : </b></label>
+                            <textarea class="form-control" id="description" rows="3" name="description" required placeholder="Enter significant events"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" >Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+        </div>
+    </div>
+
+{% endblock %}

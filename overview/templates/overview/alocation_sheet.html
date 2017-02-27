@@ -1,0 +1,495 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+
+ <script src="/static/js/jquery.multi-select.js"></script>
+ <link rel="stylesheet" type="text/css" href="/static/css/multi-select.css">
+ <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
+        rel="Stylesheet" type="text/css" />
+
+{#    <h3 class="sub-header">Daily Tabular Report</h3>#}
+    <div class="panel panel-default">
+    <div class="panel-heading" style="background-color:#3c8dbc">
+        <h2 class="panel-title" >Shift allocation form</h2>
+    </div>
+        <br>
+               
+
+
+        
+  <h3 id="success" style="color:green;text-align:center"></h3>
+  <h3 id="error" style="color:red;text-align:center"></h3>
+  
+ 
+
+  
+ 
+  
+
+ <div style="text-align:center"> 
+  <form class="form-inline">
+  <div class="form-group">
+    <label for="exampleInputName2">From Date</label>
+     <input type="text" id="fromdate" class="form-control" readonly/>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputEmail2">To Date</label>
+    <input type="text" id="todate" class="form-control" readonly/>
+  </div>
+  
+</form>
+
+</div>
+
+
+
+
+
+<div class="row">
+  &nbsp;
+  <br/>
+  </div>
+  <div class="row" style="margin-left:10%">
+ 
+<div class="col-sm-8">
+<!-- <a href='#' id='select-all'>select all</a>
+<a href='#' id='deselect-all'>deselect all</a>
+<a href='#' id='select-100'>select 100 elems</a>
+<a href='#' id='deselect-100'>deselect 100 elems</a>
+<a href='#' id='add-option'>add option</a> -->
+
+<select id='contacts' multiple='multiple'>    
+ 
+</select>
+</div>
+<div class="col-sm-4" style="margin-top:30%">
+  <button type="button" class="btn btn-primary" onclick="submitting()">submit</button>
+  </div>
+</div>
+
+
+
+ {%csrf_token%}  
+
+  <script type="text/javascript"> 
+ 
+
+  var myarray=[];
+
+  
+      $('#contacts').multiSelect({
+
+      afterSelect: function(values){
+
+
+      // console.log(values[0]);
+      myarray.push(values[0]);
+      // alert(values);
+      // console.log(myarray);
+
+      },
+      afterDeselect: function(values){        
+
+     myarray.splice(myarray.indexOf(values[0]),1);
+     // console.log(myarray);
+
+
+     
+      },
+      selectableHeader: "<div class='custom-header'>All Contacts</div>",
+      selectionHeader: "<div class='custom-header'>Contacts On duty</div>",
+      selectableFooter: "<div class='custom-header'>All Contacts</div>",
+      selectionFooter: "<div class='custom-header'>Contacts On duty</div>",
+      keepOrder: true,
+    });
+
+
+
+//       $('#select-all').click(function(){
+//   $('#contacts').multiSelect('select_all');
+//   return false;
+// });
+// $('#deselect-all').click(function(){
+//   $('#contacts').multiSelect('deselect_all');
+//   return false;
+// });
+// $('#select-100').click(function(){
+//   $('#contacts').multiSelect('select', ['elem_0', 'elem_1','elem_3']);
+//   return false;
+// });
+// $('#deselect-100').click(function(){
+//   $('#contacts').multiSelect('deselect', ['elem_0', 'elem_1','elem_3']);
+//   return false;
+// });
+// $('#refresh').on('click', function(){
+//   $('#contacts').multiSelect('refresh');
+//   return false;
+// });
+// $('#add-option').on('click', function(){
+//   $('#contacts').multiSelect('addOption', { value: 42, text: 'test 42', index: 0 });
+//    // $('#callbacks').multiSelect('addOption', { value: 42, text: 'test 42', index: 0 });
+//   return false;
+// });
+ 
+
+ window.onload=myfunction; 
+
+  function myfunction() {
+ 
+    
+    
+    $.ajax({
+        url:'/contact_json/',
+        type:'POST',
+        datatype:'json',
+        data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(data){
+
+ 
+        for(var i=0;i<data.length;i++){
+           
+        
+           $('#contacts').multiSelect('addOption', { value: data[i].fields['first_name'], text: data[i].fields['first_name'], index: i }); 
+
+
+      
+
+        }
+      
+},
+        
+               
+            
+
+     
+     error:function(){
+
+        
+        alert("error occured");
+        
+
+     }
+
+    });
+  
+}
+
+
+function submitting(){
+
+  var frmdate=$('#fromdate').val();
+  var todate=$('#todate').val();
+
+  if(frmdate==""){
+    $('#success').html("");
+    $('#error').html("Please specify from date");
+  }
+  else if(todate==""){
+    $('#success').html("");
+    $('#error').html("Please specify to date");
+  }
+
+  else{
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  if(myarray.length<1){
+  
+       $('#success').html("");
+       $('#error').html("Please select contact first");
+  }
+
+  else{ 
+
+  
+
+var truearray=[];
+
+// code to check date range
+
+$.ajax({
+
+        url:'/get_existing_timetable/',
+        type:'POST',
+        datatype:'json',
+        data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(data){
+
+ 
+        for(var i=0;i<data.length;i++){
+           
+           var exfrmdate=data[i].fields['from_date'];
+           var extodate=data[i].fields['to_date'];
+
+           // truearray.push("test");
+           // truearray[i]="ten";
+           // alert(exfrmdate+" "+extodate);
+           if((frmdate <= extodate && frmdate >= exfrmdate)) {
+              // alert("true");
+              truearray.push("true");
+            }
+            else{
+              truearray.push("false");
+            }
+           
+              
+
+        }
+        console.log(truearray);
+
+//check if date range already exists in database
+        if(truearray.indexOf("true")>-1){
+         
+          $('#success').html("");
+          $('#error').html("the date range specified already exists, try again");
+
+        }
+//check if date range already exists in database
+
+ //if does not exist process the following lines of codes 
+        else{
+
+
+
+           $.ajax({
+        url:'/get_timetables/',
+        type:'POST',
+        datatype:'json',
+        data:{contactsarray:myarray,fromdate:frmdate,todate:todate,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(mydata){
+
+       alert(frmdate+" "+todate)
+       console.log(mydata)
+       $('#success').html(mydata);
+       $('#error').html("");
+       // alert(frmdate+""+todate);
+       $('#contacts').multiSelect('deselect_all');
+       $('#contacts').multiSelect('refresh');
+       myarray=[];
+       console.log(myarray);
+
+
+
+      
+},            
+
+     
+     error:function(){
+      $('#success').html("");
+       $('#error').html("error occured");
+
+        
+       
+        
+
+     }
+
+    });
+
+
+        }
+
+//end of processing lines of code
+
+
+       
+
+
+      
+},    
+
+     
+     error:function(){
+
+        
+      
+        alert("error geting data from server");
+        
+
+     }
+
+    });
+
+// code to check date range
+
+
+  }
+
+}
+
+}
+
+
+$(function () {
+            $("#fromdate").datepicker({
+                numberOfMonths: 1,
+                dateFormat: 'yy-mm-dd',
+                showAnim:'drop' ,               
+                onSelect: function (selected) {
+                    var dt = new Date(selected);
+                    dt.setDate(dt.getDate() + 6);
+                    $("#todate").datepicker("option", "minDate", dt);
+                    $("#todate").datepicker("option", "maxDate", dt);
+
+//                    if(!$("#todate").val()==""){
+//                      alert("both selected");
+//
+//                    }
+//                    else{
+//                      alert("not both selected");
+//                    }
+                }
+                
+            });
+            $("#todate").datepicker({
+                numberOfMonths: 1,
+                dateFormat: 'yy-mm-dd',
+                showAnim: 'drop',
+                onSelect: function (selected) {
+                    var dt = new Date(selected);
+                    dt.setDate(dt.getDate() - 6);
+                    $("#fromdate").datepicker("option", "maxDate", dt);
+                    $("#fromdate").datepicker("option", "minDate", dt);
+//                    if(!$("#fromdate").val()==""){
+//                      alert("both selected");
+//
+//                    }
+//                    else{
+//                      alert("not both selected");
+//                    }
+                }
+            });
+        });
+
+
+
+
+function checkDateRange(frmdate){
+var thearray=new Array();
+   
+// code to check date range
+
+$.ajax({
+
+        url:'/get_existing_timetable/',
+        type:'POST',
+        datatype:'json',
+        data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(data){
+
+ 
+        for(var i=0;i<data.length;i++){
+           
+           var exfrmdate=data[i].fields['from_date'];
+           var extodate=data[i].fields['to_date'];
+
+           // truearray.push("test");
+           thearray[i]="ten";
+           // alert(exfrmdate+" "+extodate);
+           // if((frmdate <= extodate && frmdate >= exfrmdate)) {
+           //    // alert("true");
+           //    truearray.push("true");
+           //  }
+           //  else{
+        //    //    truearray.push("false");
+        //    //  }
+           
+              
+
+        }
+
+       
+
+
+      
+},    
+
+     
+     error:function(){
+
+        
+        // truearray.push("false");
+        // return truearray;
+        // alert("error");
+        
+
+     }
+
+    });
+
+// code to check date range
+
+
+
+return thearray;
+        
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<!-- <option value="show">Show (default)</option>
+    <option value="slideDown">Slide down</option>
+    <option value="fadeIn">Fade in</option>
+    <option value="blind">Blind (UI Effect)</option>
+    <option value="bounce">Bounce (UI Effect)</option>
+    <option value="clip">Clip (UI Effect)</option>
+    <option value="drop">Drop (UI Effect)</option>
+    <option value="fold">Fold (UI Effect)</option>
+    <option value="slide">Slide (UI Effect)</option>
+    <option value="">None</option> -->
+
+
+<!-- script to support using multiple jquery versions i.e 1.8 and 3.0.0 -->
+<script type="text/javascript">
+
+    jQuery.browser = {};
+    (function () {
+        jQuery.browser.msie = false;
+        jQuery.browser.version = 0;
+        if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+            jQuery.browser.msie = true;
+            jQuery.browser.version = RegExp.$1;
+        }
+    })();
+</script>
+
+<!-- script to support using multiple jquery versions i.e 1.8 and 3.0.0 -->
+{% endblock %}
+
+{% block script %}
+   <!-- <script>
+       $("#daily_report").dataTable();
+    </script>-->
+{% endblock %}
+
+

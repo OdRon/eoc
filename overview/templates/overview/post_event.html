@@ -1,0 +1,25 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+{#    <h1>Event</h1>#}
+    <div class="panel panel-default">
+        <div class="panel-heading" style="background-color:#7676ff">
+            <h2 class="panel-title" >Events Capture Form</h2>
+        </div>
+        <div class="row">
+            <div class="col-lg-10">{# Div for filling form #}
+                <form method="post" action="">{% csrf_token %}
+                    <table class="table table-bordered table-hover">
+                        <tr>
+                            {{ form.as_table }}
+                        </tr>
+                    </table>
+                    <input type="submit" class="btn btn-primary btn-lg btn-block" value="Save Details"/>
+                </form>
+            </div>
+{#            <div class="col-lg-6">{# Div for editing form #}
+{#            </div>#}
+        </div>
+    </div>
+{% endblock %}

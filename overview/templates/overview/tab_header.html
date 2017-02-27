@@ -1,0 +1,160 @@
+{% extends "overview/main_header.html" %}
+
+{% block content %}
+    <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>EOC  Dashboard <small>National events statistics and more</small></h1>
+{#            <div class="alert alert-dismissable alert-info">#}
+{#                <button data-dismiss="alert" class="close" type="button">&times;</button>#}
+{#                Welcome to the EOC dashboard!#}
+{#                <br />#}
+{#                The Emergency Operations Center’s (EOC) mission is to serve as the single focal point and coordination center for the management of information,#}
+{#                decision-making, and resource support and allocation to a public health  emergency response and recovery process which may be taking place at#}
+{#                the County level but with the potential to quickly affect a number  of counties &/or the National level.#}
+{#            </div>#}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-dismissable alert-info">
+            <!-- graphs tab-->
+            {% include 'overview/includes/top_box.html' %}
+            <br/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>  Weekly logs snapshot</h3>
+                </div>
+                <header>
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a data-toggle="tab" href="#logs">Call Logs</a>
+                        </li>
+                        <li class="">
+                            <a data-toggle="tab" href="#disease">Reported Diseases</a>
+                        </li>
+                        <li class="">
+                            <a data-toggle="tab" href="#events">Alerts and Events</a>
+                        </li>
+                    </ul>
+                </header>
+                <div class="body tab-content">
+                    <div class="tab-pane clearfix active" id="logs">
+                        <h4 class="tab-header"><i class="fa fa-calendar-o fa-2x"></i> Latest Call Logs</h4>
+                        {% include 'overview/includes/call_log_report.html' %}
+                    </div>
+                    <div class="tab-pane" id="disease">
+                        <h4 class="tab-header"><i class="fa fa-calendar-o fa-2x"></i> Reported Disesaes</h4>
+                        {% include 'overview/includes/limited_Disease_report.html' %}
+                    </div>
+                    <div class="tab-pane" id="events">
+                        <h4 class="tab-header"><i class="fa fa-calendar-o fa-2x"></i> Reported Alerts & Events</h4>
+                        {% include 'overview/includes/lim_alerts.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{#    <div class="row">#}
+{#        <div class="col-lg-12">#}
+{#            <!-- visits tab-->#}
+{#            <div class="col-lg-12">#}
+{#                <div class="panel panel-primary">#}
+{#                    <div class="panel-heading">#}
+{#                        <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Traffic Sources One month tracking </h3>#}
+{#                    </div>#}
+{#                    <div class="panel-body">#}
+{#                        <div id="shieldui-grid1"></div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+            var performance = [12, 43, 34, 22, 12, 33, 4, 17, 22, 34, 54, 67],
+                visits = [123, 323, 443, 32],
+                traffic = [
+                {
+                    Source: "Direct", Amount: 323, Change: 53, Percent: 23, Target: 600
+                },
+                {
+                    Source: "Refer", Amount: 345, Change: 34, Percent: 45, Target: 567
+                },
+                {
+                    Source: "Social", Amount: 567, Change: 67, Percent: 23, Target: 456
+                },
+                {
+                    Source: "Search", Amount: 234, Change: 23, Percent: 56, Target: 890
+                },
+                {
+                    Source: "Internal", Amount: 111, Change: 78, Percent: 12, Target: 345
+                }];
+
+
+            $("#shieldui-chart1").shieldChart({
+                theme: "dark",
+
+                primaryHeader: {
+                    text: "Visitors"
+                },
+                exportOptions: {
+                    image: false,
+                    print: false
+                },
+                dataSeries: [{
+                    seriesType: "area",
+                    collectionAlias: "Q Data",
+                    data: performance
+                }]
+            });
+
+            $("#shieldui-chart2").shieldChart({
+                theme: "dark",
+                primaryHeader: {
+                    text: "Traffic Per week"
+                },
+                exportOptions: {
+                    image: false,
+                    print: false
+                },
+                dataSeries: [{
+                    seriesType: "pie",
+                    collectionAlias: "traffic",
+                    data: visits
+                }]
+            });
+
+            $("#shieldui-grid1").shieldGrid({
+                dataSource: {
+                    data: traffic
+                },
+                sorting: {
+                    multiple: true
+                },
+                rowHover: false,
+                paging: false,
+                columns: [
+                { field: "Source", width: "170px", title: "Source" },
+                { field: "Amount", title: "Amount" },
+                { field: "Percent", title: "Percent", format: "{0} %" },
+                { field: "Target", title: "Target" },
+                ]
+            });
+        });
+    </script>
+{% endblock %}
+{#{% block log_script %}#}
+{#    <script>#}
+{#       $("#logs_table").dataTable();#}
+{#    </script>#}
+{#{% endblock %}#}

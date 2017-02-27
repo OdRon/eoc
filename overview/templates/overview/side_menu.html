@@ -1,0 +1,86 @@
+{#    modal example 1#}
+{#{% extends "overview/main_header.html" %}#}
+{% block side_menu %}
+
+    <link class="cssdeck" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css">
+{#   <link class="cssdeck" rel="stylesheet" href="/static/css/bootstrap.min.css">#}
+  <link rel="stylesheet" href="/static/css/bootstrap-responsive.min.css" class="cssdeck">
+
+<div class="well" style="width:220px; padding: 8px 0;">
+{#    <div class="well">#}
+    <div style="overflow-y: scroll; overflow-x: hidden; height: 570px;">
+        <ul class="nav nav-list">
+            <li class="divider"></li>
+            <li><label class="tree-toggler nav-header"><a href="/home"> Dashboard</a></label></li>
+            <li class="divider"></li>
+            <li><label class="tree-toggler nav-header">REGISTER</label>
+                <ul class="nav nav-list tree">
+                    <li><a href="/call_log_create">EOC Call register</a></li>
+                    <li><a href="/disease_create">Disease register</a></li>
+                    <li><a href="/event_create">Events register</a></li>
+                     <li><a href="/significant_events_create">Significant Events</a></li>
+                    <li><a href="/field_deployments_create">Field deployments</a></li>
+                    <li><a href="/media_report_create">Media reports</a></li>
+                </ul>
+            </li>
+            <li class="divider"></li>
+            <li><label class="tree-toggler nav-header">Reports</label>
+                <ul class="nav nav-list tree">
+                    <li><a href="/call_reports">Call report</a></li>
+                    <li><a href="/disease_reports">Disease report</a></li>
+                    <li><a href="/events_reports">Events report</a></li>
+                    <li><a href="/daily_reports">Daily report</a></li>
+                    <li><a href="/weekly_reports">Weekly report</a></li>
+                    <li><a href="/agg_reports">Aggregate report</a></li>
+                </ul>
+            </li>
+            <li class="divider"></li>
+            <li><label class="tree-toggler nav-header">GIS</label>
+                <ul class="nav nav-list tree">
+                    <li><a href="/facilities_mappings">Health facility mappings</a></li>
+                </ul>
+            </li>
+            <li class="divider"></li>
+            <li><label class="tree-toggler nav-header">EOC duty roster</label>
+                <ul class="nav nav-list tree">
+                    <li><a href="/week_shift">Weekly shift</a></li>
+                    <li><a href="/rrt_shift">RRT shift</a></li>
+                    <li><a href="/allocation_sheet">Allocation sheet</a></li>
+                </ul>
+            </li>
+            <li class="divider"></li>
+            <li><label class="tree-toggler nav-header">Emergency Contacts</label>
+                <ul class="nav nav-list tree">
+                    <li>
+                        <a href="/all_contacts">All</a>
+                    </li>
+                    {% for contact_type in cnt.contact_type_vals %}
+                        <li><a href="/{{contact_type.id}}/contact_type">{{contact_type.description}}</a> </li>
+                    {% endfor %}
+{#                    <li><a href="#">Hospital Contacts</a></li>#}
+{#                    <li><a href="#">Ambulance Contacts</a></li>#}
+{#                    <li><a href="#">Police Contacts</a></li>#}
+{#                    <li><a href="#">Fire Contacts</a></li>#}
+{#                    <li><a href="#">National Disaster Contacts</a></li>#}
+{#                    <li><a href="#">Kenya Red Cross Contacts</a></li>#}
+{#                    <li><a href="/eoc">EOC Contacts</a></li>#}
+                </ul>
+            </li>
+            <li class="divider"></li>
+        </ul>
+    </div>
+</div>
+
+<script class="cssdeck" src="/static/js/jquery.min.js"></script>
+<script class="cssdeck" src="/static/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+          var Tree = 'label.tree-toggler';
+          $(Tree).parent().children('ul.tree').toggle(300);
+          $(Tree).click(function () {
+            $(this).parent().children('ul.tree').toggle(300);
+          });
+        });
+    </script>
+{% endblock %}

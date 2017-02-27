@@ -1,0 +1,261 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading" style="background-color:#3c8dbc">
+            <h2 class="panel-title" align="center">Disease Capture Form</h2>
+        </div>
+
+        <div class="col-md-2">
+        </div>
+
+        <div class="row">
+        <div class="col-md-8">
+            <div class="well">
+                 <h2 style="text-align:center">{{success}}</h2>
+                    <form method="post" action="{% url 'disease_create_submit'%}">{% csrf_token %}
+{#                        <div class="form-group">#}
+{#                            <label for="disease_type"><b>Incident Type : </b></label>#}
+{#                            <select class="form-control" id="disease_type" name="disease_type" required>#}
+{#                                <option value="" disabled selected>Select incident</option>#}
+{#                                {% for dt in disease_type %}#}
+{#                                    <option value="{{dt.description}}">{{dt.description}}</option>#}
+{#                                {% endfor %}#}
+{#                            </select>#}
+{#                        </div>#}
+                        <div class="form-group">
+                            <label for="disease_type"><b>Disease Type : </b></label>
+                            <select class="form-control" id="disease_type" name="disease_type" required>
+                                <option value="" disabled selected>Select Disease option</option>
+                                {% for dt in disease_type %}
+                                    <option value="{{dt.description}}">{{dt.description}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="data_source"><b>Data Source : </b></label>
+                            <select class="form-control" id="data_source" name="data_source" required>
+                                <option value="" disabled selected>Select Data Source</option>
+                                {% for ds in data_source %}
+                                    <option value="{{ds.description}}">{{ds.description}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="region"><b>Region : </b></label>
+                            <select class="form-control" id="region" name="region" onchange="getcounty()" required>
+                                <option value="" disabled selected>Select Region</option>
+                                {% for reg in region %}
+                                    <option value="{{reg.description}}">{{reg.description}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group" id="ctyrow" style="display:none">
+                            <label for="county"><b>County : </b></label>
+                            <select name="county" id="county" class="form-control" onchange="getsubcounty()">
+                                <option value="" selected>Select county</option>
+                            </select>
+                            <label for="county" style="text-align:center; color:#ff0000" id="countyerror"></label>
+                        </div>
+                        <div class="form-group" id="subctyrow" style="display:none">
+                            <label for="subcounty"><b>Sub-county : </b></label>
+                            <select name="subcounty" id="subcounty" class="form-control">
+                                <option value="" selected>select sub-county</option>
+                            </select>
+                            <label for="subcounty" style="text-align:center; color:#ff0000" id="subcountyerror"></label>
+                        </div>
+                        
+
+
+
+{#                      <div class="form-group">#}
+{#                            <table class="table">#}
+{#                                 <tr id="ctyrow" style="display:none">#}
+{#                            <td>#}
+{##}
+{#                                <label for="county"><b>County : </b></label>#}
+{#                            </td>#}
+{#                            <td>#}
+{#                             <select name="county" id="county" class="form-control" onchange="getsubcounty()">#}
+{#                            <option value="" selected>Select county</option>#}
+{##}
+{#                           </select>#}
+{##}
+{#                            </td>#}
+{#                            <td><h5 style="text-align:center; color:#ff0000" id="countyerror"></h5></td>#}
+{#                        </tr>#}
+{#                            </table>#}
+{##}
+{#                        </div>#}
+{##}
+{##}
+{##}
+{#                        <div class="form-group">#}
+{#                            <table class="table">#}
+{#                                 <tr id="subctyrow" style="display:none">#}
+{#                            <td>#}
+{##}
+{#                                 <label for="subcounty"><b>Subcounty : </b></label>#}
+{#                            </td>#}
+{#                            <td>#}
+{#                             <select name="subcounty" id="subcounty" class="form-control">#}
+{#                            <option value="" selected disabled>select subcounty</option>#}
+{##}
+{#                           </select>#}
+{##}
+{#                            </td>#}
+{#                            <td><h5 style="text-align:center; color:#ff0000" id="subcountyerror"></h5></td>#}
+{#                        </tr>#}
+{#                            </table>#}
+{##}
+{#                        </div>#}
+
+
+                        <div class="form-group">
+                            <label for="date_created"><b>Date Reported : </b></label>
+                                <input class="form-control" type="date" value="{{ day }}"  name="date_created" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status"><b>Status : </b></label>
+                            <select class="form-control" id="status" name="status" required>
+                                <option value="" disabled selected>Select Status</option>
+                                {% for st in status %}
+                                    <option value="{{st.description}}">{{st.description}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cases"><b>Cases : </b></label>
+                            <input type="number" min="0" class="form-control" id="cases" name="cases" required placeholder="Cases">
+                        </div>
+                        <div class="form-group">
+                            <label for="deaths"><b>Deaths : </b></label>
+                            <input type="number" min="0" class="form-control" id="deaths" name="deaths" required placeholder="Deaths">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="remarks"><b>Remarks : </b></label>
+                            <textarea class="form-control" id="remarks" rows="3" name="remarks" required placeholder="Enter remarks"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" >Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+        </div>
+    </div>
+
+
+    <script>
+
+    $( function() {
+        $( "#date_created" ).datepicker();
+      } );
+
+
+    function getsubcounty(){
+    
+    var county=$('#county').val();
+    $.ajax({
+        url:'/get_subcounty/',
+        type:'POST',
+        datatype:'json',
+        data:{county:county,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(data){
+        
+        
+        var options = '<option value="" selected disabled>select sub-county</option>';
+        $('#subcounty').html(options); 
+
+        
+        for(var i=0;i<data.length;i++){
+           
+          var options = '<option value="' + data[i].fields['subcounty'] + '">' + data[i].fields['subcounty'] + '</option>'; 
+          $('#subcounty').append(options);         
+            
+        }
+        
+               
+            
+
+     },
+     error:function(){
+
+        // alert("error getting data from server");
+        var options = '<option value="" selected disabled>select county</option>';
+        $('#subcounty').html(options);
+        
+
+     }
+
+    });
+ }
+
+
+
+
+
+ function getcounty(){
+    
+    var region=$('#region').val();
+    var ctyrow=document.getElementById('ctyrow');
+    var subctyrow=document.getElementById('subctyrow');
+    if(region.toUpperCase()=="KENYA"){
+        ctyrow.style.display = 'block';
+        subctyrow.style.display = 'block';;
+
+
+         $.ajax({
+        url:'/get_county/',
+        type:'POST',
+        datatype:'json',
+        data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(data){
+        
+        
+        var options = '<option value="" selected disabled>select county</option>';
+        $('#county').html(options); 
+
+        
+        for(var i=0;i<data.length;i++){
+           
+          var options = '<option value="' + data[i].fields['description'] + '">' + data[i].fields['description'] + '</option>'; 
+          $('#county').append(options);         
+            
+        }
+        
+               
+            
+
+     },
+     error:function(){
+
+        // alert("error getting data from server");
+        var options = '<option value="" selected disabled>select county</option>';
+        $('#county').html(options);
+        
+
+     }
+
+    });
+
+
+    }
+    else{
+        ctyrow.style.display = 'none';
+        subctyrow.style.display = 'none';
+    }
+
+   
+ }
+
+    </script>
+
+{% endblock %}

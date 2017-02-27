@@ -1,0 +1,63 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+{#    <h3 class="sub-header">DSRU Weekly Tabular Report</h3>#}
+        <div class="panel panel-default">
+        <div class="panel-heading" style="background-color:#7676ff">
+            <h2 class="panel-title" >DSRU Weekly Tabular Report</h2>
+        </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="dsru_table">
+              <thead style="background-color: #a6e1ec">
+                <tr>
+                    <th>Disease</th>
+                    <th>District</th>
+                    <th>County</th>
+                    <th>Province</th>
+                    <th>Week Number</th>
+                    <th>Week Ending</th>
+                    <th>Cases < 5</th>
+                    <th>Cases > 5</th>
+                    <th>Total Cases</th>
+                    <th>Death < 5</th>
+                    <th>Death > 5</th>
+                    <th>Total Deaths</th>
+                    <th>Year</th>
+                    <th>Reported</th>
+                    <th>Designation</th>
+                    <th>Date Reported</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for dsru in dsru_vals %}
+                <tr>
+                    <td>{{dsru.incident.description}}</td>
+                    <td>{{dsru.district}}</td>
+                    <td>{{dsru.county.description}}</td>
+                    <td>{{dsru.province}}</td>
+                    <td>{{dsru.wk_no}}</td>
+                    <td>{{dsru.wk_end}}</td>
+                    <td>{{dsru.cases_under_5}}</td>
+                    <td>{{dsru.cases_over_5}}</td>
+                    <td>{{dsru.total_cases}}</td>
+                    <td>{{dsru.death_under_5}}</td>
+                    <td>{{dsru.death_over_5}}</td>
+                    <td>{{dsru.total_death}}</td>
+                    <td>{{dsru.year}}</td>
+                    <td>{{dsru.reported}}</td>
+                    <td>{{dsru.designation}}</td>
+                    <td>{{dsru.date_reported}}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+       $("#dsru_table").dataTable();
+    </script>
+{% endblock %}

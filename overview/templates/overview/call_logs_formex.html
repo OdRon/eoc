@@ -1,0 +1,123 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+    <div class="panel panel-default">
+        <div class="panel-heading" style="background-color:#3c8dbc">
+            <h2 class="panel-title" align="center" style="color: #ffffff">Call Log Capture Form</h2>
+        </div>
+
+        <div class="col-lg-2">
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="well">
+                    <h2 style="text-align:center">{{success}}</h2>
+                    <form method="post" action="{% url 'call_log_create_submit' %}">{% csrf_token %}
+                        <div class="form-group">
+                            <label for="disease_type"><b>Disease Type : </b></label>
+                            <select class="form-control" id="disease_type" name="disease_type" required>
+                                <option value="" disabled selected>Select Disease option</option>
+                                {% for dt in disease_type %}
+                                    <option value="{{dt.description}}">{{dt.description}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="event_type"><b>Event Type : </b></label>
+                            <select class="form-control" id="event_type" name="event_type" required>
+                                <option value="" disabled selected>Select Event</option>
+                                {% for ett in event_type %}
+                                    <option value="{{ett.description}}">{{ett.description}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="incident_status"><b>Status : </b></label>
+                            <select class="form-control" id="incident_status" name="incident_status" required>
+                                <option value="" disabled selected>Select Status</option>
+                                {% for sts in incident_status %}
+                                    <option value="{{sts.description}}">{{sts.description}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="county"><b>County : </b></label>
+                            <select class="form-control" id="county" name="county" required>
+                                <option value="" disabled selected>Select County</option>
+                                {% for cty in county %}
+                                    <option value="{{cty.description}}">{{cty.description}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="location"><b>Location : </b></label>
+                            <input class="form-control" type="text" id="location" name="location" size="45" placeholder="location" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="caller_name"><b>Caller Name : </b></label>
+                            <input class="form-control" type="text" id="caller_name" name="caller_name" size="45" placeholder="caller_name" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="caller_number"><b>Caller Number : </b></label>
+                            <input class="form-control" type="text" id="caller_number" name="caller_number" size="45" placeholder="caller_number" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="date_reported"><b>Date Reported : </b></label>
+                            <input class="form-control" type="date" value="2016-01-01" id="date_reported" name="date_reported" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description"><b>Description : </b></label>
+                            <textarea class="form-control" id="description" rows="3" name="description" required placeholder="Enter description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="action_taken"><b>Action Taken : </b></label>
+                            <textarea class="form-control" id="action_taken" rows="3" name="action_taken" required placeholder="Enter action taken"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" >Save</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function fillEvent(val){
+        try{
+
+    $.ajax({
+        // type:"POST",
+        // dataType:"json",
+        // async:true,
+        // url:"/call_log/fill_event/",
+        // data:{
+        //     // diseaseType:$('#disease_type').val(),
+        //    // csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+        // },
+
+        // url : "/call_log/fill_event/", // the endpoint
+        // dataType:"json",
+        // async:true,
+        // type : "GET", // http method
+       
+        success:function(){
+
+            // $("#event_type").val("test");
+            alert("success");
+        },
+        error : function() {
+                            alert("error getting data");
+                        }
+    }); 
+}
+catch(e){
+
+    alert(e.description);
+}
+
+           }
+    </script>
+{% endblock %}

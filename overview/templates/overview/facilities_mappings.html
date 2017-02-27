@@ -1,0 +1,1152 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+{#    <h3 class="sub-header">FACILITIES MAPPINGS</h3>#}
+        <div class="panel panel-default">
+        <div class="panel-heading" style="background-color:#3c8dbc">
+        <h2 class="panel-title" >All facilities</h2>
+    </div>
+     
+
+
+          <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+<label class="checkbox-inline"><input type="checkbox" value="" id="hospitals">Hospitals</label>
+<label class="checkbox-inline"><input type="checkbox" value="" id="policestations">Police Stations</label>
+<label class="checkbox-inline"><input type="checkbox" value="" id="referallabs">Referal Labs</label>
+          
+<div id="map_div" ></div>  <!-- div to hold map -->
+
+<div >
+  LEGEND
+<li>Hospitals <img src="http://icons.iconarchive.com/icons/icons-land/vista-map-markers/24/Map-Marker-Bubble-Chartreuse-icon.png"></li>
+<li>Referal Labs <img src="http://icons.iconarchive.com/icons/icons-land/vista-map-markers/24/Map-Marker-Ball-Pink-icon.png"></li>
+<li>Police stations <img src="http://icons.iconarchive.com/icons/icons-land/vista-map-markers/24/Map-Marker-Marker-Outside-Azure-icon.png"></li>
+</div>
+
+        </div>
+{% endblock %}
+
+{% block script %}
+
+{%csrf_token%}
+
+ <script>
+    google.charts.load('current', { 'packages': ['map'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+ function drawChart() {
+
+ var hospitalschecked=false;
+ var referallabschecked=false;
+ var policechecked=false;
+
+
+     
+      $.ajax({
+
+      url:'/get_facilities/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+
+
+      for(var i=0;i<data.length;i++){
+
+        
+        x=data[i].longitude;//get the longitude from models
+        y=data[i].latitude;//get latitude from models
+
+        z=data[i].position;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z]);//add the coordinates to the map
+
+      }
+
+      var options = {
+          icons: {
+            default: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+          center: {lat: -33.8688, lng: 151.2195},
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options);
+
+       var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+ $('#hospitals').change(function() {
+  if ($(this).is(':checked')) {
+
+    hospitalschecked=true;
+    checking();
+
+    ///map code here
+
+    
+
+
+    ////map code end
+
+  } else {
+
+    //map code here
+
+    hospitalschecked=false;
+    checking();
+   
+  
+
+    //map code here
+
+  }
+});
+
+
+
+
+ $('#policestations').change(function() {
+  if ($(this).is(':checked')) {
+
+
+ policechecked=true;
+ checking();
+ 
+
+    //map code here
+
+
+    //map code here
+
+  } else {
+
+
+ policechecked=false; 
+ checking();
+
+    
+
+  }
+
+}); 
+
+
+
+  $('#referallabs').change(function() {
+  if ($(this).is(':checked')) {
+
+  
+     referallabschecked=true;
+     checking();
+     
+ 
+
+    //map code here
+
+    
+
+    //map code here
+
+  } else {
+
+    referallabschecked=false;
+    checking();    
+
+  }
+});
+
+
+  function checking(){
+
+
+
+
+    if(referallabschecked && (policechecked && hospitalschecked)){
+
+ // map code here
+
+
+ //initialising options
+
+ var options = {
+          icons: {
+             default: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png'
+            },
+             police: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png'
+            },
+            referal: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+ //initialising options
+
+
+
+  $.ajax({
+
+      url:'/get_referallabs_policeposts_and_hospitals/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+      mydata.addColumn('string', 'Marker');
+      console.log(data.polices.length);
+      console.log(data.referals.length);
+
+      for(var i=0;i<data.polices.length;i++){
+
+        // console.log(data.polices[i].latitude);
+
+        
+        x=data.polices[i].latitude;//get the longitude from models
+        y=data.polices[i].longitude;//get latitude from models
+
+        z=data.polices[i].post_name;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'police']);//add the coordinates to the map
+
+      }
+
+
+      for(var i=0;i<data.referals.length;i++){
+
+        
+        x=data.referals[i].latitude;//get the longitude from models
+        y=data.referals[i].longitude;//get latitude from models
+
+        z=data.referals[i].referal_name;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'referal']);//add the coordinates to the map
+
+       
+
+      }
+
+      for(var i=0;i<data.hospitals.length;i++){
+
+        
+        x=data.hospitals[i].longitude;//get the longitude from models
+        y=data.hospitals[i].latitude;//get latitude from models
+
+        z=data.hospitals[i].position;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        
+        mydata.addRow([x,y,z,'default']);//add the coordinates to the map
+
+       
+      }
+
+      
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options); 
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+
+ //map code here
+}
+
+
+
+else if(referallabschecked && policechecked){
+
+ // map code here
+
+
+ //initialising options
+
+ var options = {
+          icons: {
+             police: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png'
+            },
+            referal: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+ //initialising options
+
+
+
+  $.ajax({
+
+      url:'/get_referallabs_and_policepost/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+      mydata.addColumn('string', 'Marker');
+      console.log(data.polices.length);
+      console.log(data.referals.length);
+
+      for(var i=0;i<data.polices.length;i++){
+
+        // console.log(data.polices[i].latitude);
+
+        
+        x=data.polices[i].latitude;//get the longitude from models
+        y=data.polices[i].longitude;//get latitude from models
+
+        z=data.polices[i].post_name;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'police']);//add the coordinates to the map
+
+      }
+
+
+      for(var i=0;i<data.referals.length;i++){
+
+        
+        x=data.referals[i].latitude;//get the longitude from models
+        y=data.referals[i].longitude;//get latitude from models
+
+        z=data.referals[i].referal_name;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'referal']);//add the coordinates to the map
+
+        
+
+      }
+
+      
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options); 
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+
+ //map code here
+}
+
+
+
+
+else if(hospitalschecked && referallabschecked){
+
+  //map code here
+
+  
+ var options = {
+          icons: {
+            default: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Chartreuse-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Chartreuse-icon.png'
+            },
+
+            referal: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+ //initialising options
+
+
+
+  $.ajax({
+
+      url:'/get_referallabs_policeposts_and_hospitals/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+      mydata.addColumn('string', 'Marker');
+      console.log(data.polices.length);
+      console.log(data.hospitals.length);
+
+      for(var i=0;i<data.referals.length;i++){
+
+        // console.log(data.polices[i].latitude);
+
+        
+        x=data.referals[i].latitude;//get the longitude from models
+        y=data.referals[i].longitude;//get latitude from models
+
+        z=data.referals[i].post_name;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'referal']);//add the coordinates to the map
+
+      }
+
+
+      for(var i=0;i<data.hospitals.length;i++){
+
+        
+        x=data.hospitals[i].longitude;//get the longitude from models
+        y=data.hospitals[i].latitude;//get latitude from models
+
+        z=data.hospitals[i].position;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'default']);//add the coordinates to the map
+
+        
+      }
+
+      
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options); 
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+
+ //map code here
+}
+
+
+
+
+else if(policechecked && hospitalschecked){
+
+  //map code here
+
+  
+ var options = {
+          icons: {
+            default: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Chartreuse-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Chartreuse-icon.png'
+            },
+            police: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+ //initialising options
+
+
+
+  $.ajax({
+
+      url:'/get_referallabs_policeposts_and_hospitals/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+      mydata.addColumn('string', 'Marker');
+      console.log(data.polices.length);
+      console.log(data.hospitals.length);
+
+      for(var i=0;i<data.polices.length;i++){
+
+        // console.log(data.polices[i].latitude);
+
+        
+        x=data.polices[i].latitude;//get the longitude from models
+        y=data.polices[i].longitude;//get latitude from models
+
+        z=data.polices[i].post_name;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'police']);//add the coordinates to the map
+
+      }
+
+
+      for(var i=0;i<data.hospitals.length;i++){
+
+        
+        x=data.hospitals[i].longitude;//get the longitude from models
+        y=data.hospitals[i].latitude;//get latitude from models
+
+        z=data.hospitals[i].position;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'default']);//add the coordinates to the map
+
+        
+      }
+
+      
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options); 
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+
+ //map code here
+}
+
+
+
+else if(hospitalschecked){
+
+  // map code here
+
+   $.ajax({
+
+      url:'/get_facilities/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+      // mydata.addRow([-0.78693000000,37.12663000000,'MARAGUA DISTRICT HOSPITAL']);
+      // mydata.addRow([-0.59746700000,36.94820000000,'KIRIAINI MISS. HOSPITAL']);
+
+      for(var i=0;i<data.length;i++){
+
+        
+        x=data[i].longitude;//get the longitude from models
+        y=data[i].latitude;//get latitude from models
+
+        z=data[i].position;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z]);//add the coordinates to the map
+
+      }
+
+      var options = {
+          icons: {
+            default: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options); 
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+
+  //map code here
+}
+
+
+
+
+else if(referallabschecked){
+
+  // map code here
+
+   $.ajax({
+
+      url:'/get_referallabs/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+      mydata.addColumn('string', 'Marker');
+
+      for(var i=0;i<data.length;i++){
+
+        
+        x=data[i].latitude;//get the longitude from models
+        y=data[i].longitude;//get latitude from models
+
+        z=data[i].referal_name;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'referal']);//add the coordinates to the map
+
+      }
+
+      var options = {
+          icons: {
+            referal: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Ball-Pink-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options); 
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+  //map code here
+}
+
+
+
+else if(policechecked){
+
+  //map code here
+
+   $.ajax({
+
+      url:'/get_policeposts/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+       mydata.addColumn('string', 'Marker');
+
+      for(var i=0;i<data.length;i++){
+
+        
+        x=data[i].latitude;//get the longitude from models
+        y=data[i].longitude;//get latitude from models
+
+        z=data[i].post_name;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z,'police']);//add the coordinates to the map
+
+      }
+
+      var options = {
+          icons: {
+             police: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Marker-Outside-Azure-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options); 
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+  //map code here
+}
+
+
+
+
+else{
+
+  //map code here
+
+   $.ajax({
+
+      url:'/get_facilities/',
+      type:'POST',
+      datatype:'json',
+      data:{csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+    
+     success:function(data){
+           
+      var mydata =new google.visualization.DataTable();
+      mydata.addColumn('number', 'LATITUDE');
+      mydata.addColumn('number', 'LONGITUDE');
+      mydata.addColumn('string', 'NAME');
+
+      for(var i=0;i<data.length;i++){
+
+        
+        x=data[i].longitude;//get the longitude from models
+        y=data[i].latitude;//get latitude from models
+
+        z=data[i].position;//get the position from models
+        x=parseFloat(x);//convert the longitude to float from string
+        y=parseFloat(y);//convert the latitude to float from string
+        mydata.addRow([x,y,z]);//add the coordinates to the map
+
+      }
+
+      var options = {
+          icons: {
+           default: {
+              normal: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png',
+              selected: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Bubble-Chartreuse-icon.png'
+            }
+          },
+          showTip: true,
+          useMapTypeControl: true,
+          zoomLevel: 7,
+          enableScrollWheel:true,
+          mapType: 'styledMap',
+
+           maps: {
+          // Your custom mapTypeId holding custom map styles.
+          styledMap: {
+            name: 'Styled Map', // This name will be displayed in the map type control.
+            styles: [
+              {featureType: 'poi.attraction',
+               stylers: [{color: '#fce8b2'}]
+              },
+              {featureType: 'road.highway',
+               stylers: [{hue: '#0277bd'}, {saturation: -50}]
+              },
+              {featureType: 'road.highway',
+               elementType: 'labels.icon',
+               stylers: [{hue: '#000'}, {saturation: 100}, {lightness: 50}]
+              },
+              {featureType: 'landscape',
+               stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
+              }
+        ]}}
+
+
+        };
+
+        // var input = document.getElementById('pac-input');
+        // var searchBox = new google.maps.places.SearchBox(input);
+       
+
+
+                   
+
+      var map = new google.visualization.Map(document.getElementById('map_div'));
+      // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);        
+      map.draw(mydata,options); 
+
+     },
+
+
+     error:function(){
+
+      alert("error in getting coordinates, try again");
+
+     }
+
+  });
+
+  //map code here
+}
+
+
+  }
+
+
+
+      }
+  </script>
+   
+{% endblock %}
+
+

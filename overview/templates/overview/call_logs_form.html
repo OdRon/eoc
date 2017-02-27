@@ -1,0 +1,399 @@
+{#{% extends "overview/main_header.html" %}#}
+{% extends "overview/index.html" %}
+
+{% block main %}
+    <div class="panel panel-default">
+        <div class="panel-heading" style="background-color:#3c8dbc">
+            <h2 class="panel-title" align="center" style="color: #ffffff">Call Log Capture Form</h2>
+        </div>
+
+        <div class="col-lg-2">
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="well">
+                    <h4 style="text-align:center; color:#00ff00" id="success"></h4>
+                    <h4 style="text-align:center; color:#ff0000" id="error"></h4>
+                    <form method="post" action="{% url 'call_log_create_submit' %}">{% csrf_token %}
+                        <div class="form-group">
+                            <label for="incident_type"><b>Incident Type : </b></label>
+                            <select class="form-control" id="incidenttype" name="incident_type" onchange="displaydisease()">
+                                <option value="" disabled selected>Select incident option</option>
+                                <option value="disease type">Disease</option>
+                                <option value="event type">Event</option>
+                            </select>
+                            <label for="incident_type" style="text-align:center; color:#ff0000" id="incidenterror"></label>
+                        </div>
+                        <div class="form-group" id="disease_div" style="display: none;">
+                            <label for="disease_type" id="dtyperow"><b>Disease Type : </b></label>
+                            <select class="form-control" id="diseasetype" name="disease_type" required>
+                                <option value="" disabled selected>Select Disease option</option>
+                                {% for dt in disease_type %}
+                                    <option value="{{dt.description}}">{{dt.description}}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="disease_type" style="text-align:center; color:#ff0000" id="diseaseerror"></label>
+                        </div>
+                        <div class="form-group" id="event_div" style="display: none;">
+                            <label for="event_type" id="etyperow"><b>Event Type : </b></label>
+                            <select class="form-control" id="eventtype" name="event_type" required>
+                                <option value="" disabled selected>Select Event</option>
+                                {% for ett in event_type %}
+                                    <option value="{{ett.description}}">{{ett.description}}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="event_type" style="text-align:center; color:#ff0000" id="eventtypeerror"></label>
+                        </div>
+                        <div class="form-group" id="county_div" style="display: none;">
+                            <label for="county" id="ctyrow"><b>County : </b></label>
+                            <select class="form-control" name="county" id="county" onchange="getsubcounty()" required>
+                                <option value="" disabled selected>Select County</option>
+                                {% for cty in county %}
+                                    <option value="{{cty.description}}">{{cty.description}}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="county" style="text-align:center; color:#ff0000" id="countyerror"></label>
+                        </div>
+                        <div class="form-group" id="subcounty_div" style="display: none;">
+                            <label for="sub_county" id="subctyrow"><b>Sub county : </b></label>
+                            <select class="form-control" name="subcounty" id="subcounty" required>
+                                <option value="" disabled selected>Select sub-county</option>
+{#                                {% for cty in county %}#}
+{#                                    <option value="{{cty.description}}">{{cty.description}}</option>#}
+{#                                {% endfor %}#}
+                            </select>
+                            <label for="sub_county" style="text-align:center; color:#ff0000" id="subcountyerror"></label>
+                        </div>
+                        <div class="form-group" id="location_div" style="display: none;">
+                            <label for="location" id="locrow"><b>Location : </b></label>
+                            <input class="form-control" type="text" id="location" name="location" size="45" placeholder="location" required/>
+                            <label for="location" style="text-align:center; color:#ff0000" id="locationerror"></label>
+                        </div>
+                        <div class="form-group" id="name_div" style="display: none;">
+                            <label for="caller_name" id="callernamerow"><b>Caller Name : </b></label>
+                            <input class="form-control" type="text" id="callername" name="caller_name" size="45" placeholder="caller_name" required/>
+                            <label for="callernamerow" style="text-align:center; color:#ff0000" id="callernameerror"></label>
+                        </div>
+                        <div class="form-group" id="number_div" style="display: none;">
+                            <label for="caller_number" id="callernumberrow"><b>Caller Number : </b></label>
+                            <input class="form-control" type="text" id="callernumber" name="caller_number" size="45" placeholder="caller_number" required/>
+                            <label for="callernumberrow" style="text-align:center; color:#ff0000" id="callernumbererror"></label>
+                        </div>
+                        <div class="form-group" id="date_div" style="display: none;">
+                            <label for="date_reported" id="datereportedrow"><b>Date Reported : </b></label>
+                            <input class="form-control" type="date" value="{{ day }}" id="datereported" name="date_reported" required>
+                            <label for="datereportedrow" style="text-align:center; color:#ff0000" id="datereportederror"></label>
+                        </div>
+                        <div class="form-group" id="description_div" style="display: none;">
+                            <label for="description" id="descrow"><b>Description : </b></label>
+                            <textarea class="form-control" id="description" rows="3" name="description" required placeholder="Enter description"></textarea>
+                            <label for="description" style="text-align:center; color:#ff0000" id="descriptionerror"></label>
+                        </div>
+                        <div class="form-group" id="action_div" style="display: none;">
+                            <label for="action_taken" id="actiontakenrow"><b>Action Taken : </b></label>
+                            <textarea class="form-control" id="actiontaken" rows="3" name="action_taken" required placeholder="Enter action taken"></textarea>
+                            <label for="actiontakenrow" style="text-align:center; color:#ff0000" id="actiontakenerror"></label>
+                        </div>
+                        <div class="form-group" id="submit_div" style="display: none;">
+                            <button id="submitrow" type="submit" onclick="testing()" class="btn btn-primary btn-lg btn-block" >Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+    $( function() {
+        $( "#date_created" ).datepicker();
+      } );
+
+    function fillEvent(val){
+        try{
+
+    $.ajax({
+        // type:"POST",
+        // dataType:"json",
+        // async:true,
+        // url:"/call_log/fill_event/",
+        // data:{
+        //     // diseaseType:$('#disease_type').val(),
+        //    // csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+        // },
+
+        // url : "/call_log/fill_event/", // the endpoint
+        // dataType:"json",
+        // async:true,
+        // type : "GET", // http method
+       
+        success:function(){
+
+            // $("#event_type").val("test");
+            alert("success");
+        },
+        error : function() {
+                            alert("error getting data");
+                        }
+    }); 
+}
+catch(e){
+
+    alert(e.description);
+}
+
+           }
+
+    function displaydisease(){
+
+
+    var dtype=document.getElementById('disease_div');
+    var etype=document.getElementById('event_div');
+    var ctyrow=document.getElementById('county_div');
+    var subctyrow=document.getElementById('subcounty_div');
+    var locrow=document.getElementById('location_div');
+    var callernamerow=document.getElementById('name_div');
+    var callernumberrow=document.getElementById('number_div');
+    var datereportedrow=document.getElementById('date_div');
+    var descrow=document.getElementById('description_div');
+    var actiontakenrow=document.getElementById('action_div');
+    var submitrow=document.getElementById('submit_div');
+
+
+    var y=document.getElementById('incidenttype');
+
+   // x.style.display="table-row";
+
+   var myval = y.value;
+
+        console.log(myval);
+{#        document.writeln(myval);#}
+
+    if(myval=="disease type"){
+
+        dtype.style.display = 'block';
+        etype.style="display: none;";
+        ctyrow.style.display = 'block';
+        locrow.style.display = 'block';
+        callernamerow.style.display = 'block';
+        callernumberrow.style.display = 'block';
+        datereportedrow.style.display = 'block';
+        descrow.style.display = 'block';
+        actiontakenrow.style.display = 'block';
+        submitrow.style.display = 'block';
+        subctyrow.style.display = 'block';
+
+    }
+    else if(myval=="event type"){
+
+        dtype.style.display = 'none';
+        etype.style.display = 'block';
+        ctyrow.style.display = 'block';
+        locrow.style.display = 'block';
+        callernamerow.style.display = 'block';
+        callernumberrow.style.display = 'block';
+        datereportedrow.style.display = 'block';
+        descrow.style.display = 'block';
+        actiontakenrow.style.display = 'block';
+        submitrow.style.display = 'block';
+        subctyrow.style.display = 'block';
+    }
+    else{
+
+        etype.style="display: none;";
+        dtype.style="display: none;";
+        ctyrow.style="display: none;";
+        locrow.style="display: none;";
+        callernamerow.style="display: none;";
+        callernumberrow.style="display: none;";
+        datereportedrow.style="display: none;";
+        descrow.style="display: none;";
+        actiontakenrow.style="display: none;";
+        submitrow.style="display: none;";
+        subctyrow.style="display: none;";
+    }
+}
+
+    function getsubcounty(){
+
+    var county=$('#county').val();
+    $.ajax({
+        url:'/get_subcounty/',
+        type:'POST',
+        datatype:'json',
+        data:{county:county,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+     success:function(data){
+
+
+        var options = '<option value="" selected disabled>select subcounty</option>';
+        $('#subcounty').html(options);
+
+
+        for(var i=0;i<data.length;i++){
+
+          var options = '<option value="' + data[i].fields['subcounty'] + '">' + data[i].fields['subcounty'] + '</option>';
+          $('#subcounty').append(options);
+
+        }
+
+
+
+
+     },
+     error:function(){
+
+        // alert("error getting data from server");
+        var options = '<option value="" selected disabled>select county</option>';
+        $('#subcounty').html(options);
+
+
+     }
+
+    });
+ }
+
+     function testing(){
+
+    $('#diseaseerror').html('');
+    $('#eventtypeerror').html('');
+    $('#countyerror').html('');
+    $('#locationerror').html('');
+    $('#callernameerror').html('');
+    $('#callernumbererror').html('');
+    $('#datereportederror').html('');
+    $('#descriptionerror').html('');
+    $('#actiontakenerror').html('');
+     $('#subcountyerror').html('');
+
+
+    var diseasetype=$('#diseasetype').val();
+    var eventtype=$('#eventtype').val();
+    var county=$('#county').val();
+    var subcounty=$('#subcounty').val();
+    var location=$('#location').val();
+    var callername=$('#callername').val();
+    var callernumber=$('#callernumber').val();
+    var datereported=$('#datereported').val();
+    var description=$('#description').val();
+    var actiontaken=$('#actiontaken').val();
+
+    var dtype=$('#disease_div');
+    // $("#id").css("display", "none");
+    var etype=$('#event_div');
+    if($("#disease_div").css("display")== "none"){
+        //alert("disease type invisible");
+        diseasetype="none";
+    }
+    else if($("#event_div").css("display")=="none"){
+
+      // alert("event type invisible");
+      eventtype="none";
+
+    }
+
+    if(!($("#disease_div").css("display")== "none") && diseasetype===''){
+    $('#diseaseerror').html('diseasetype required');
+    $('#success').html("");
+
+    }if(!($("#event_div").css("display")=="none") && eventtype===''){
+
+      $('#eventtypeerror').html('event type required');
+      $('#success').html("");
+    }
+
+    if(county===''){
+
+      $('#countyerror').html('county required');
+      $('#success').html("");
+
+    }
+    if(county===''){
+
+      $('#subcountyerror').html('subcounty required');
+      $('#success').html("");
+
+    }
+    if(location===''){
+    $('#locationerror').html('location required');
+    $('#success').html("");
+
+    }
+    if(callername===''){
+
+        $('#callernameerror').html('caller name required');
+        $('#success').html("");
+
+    }if(callernumber===''){
+
+        $('#callernumbererror').html('caller number required');
+        $('#success').html("");
+
+
+    }
+    if(datereported===''){
+
+     $('#datereportederror').html('date reported required');
+     $('#success').html("");
+
+    }
+    if(description===''){
+     $('#descriptionerror').html('description required');
+     $('#success').html("");
+
+    }
+    if(actiontaken===''){
+
+      $('#actiontakenerror').html('action taken required');
+
+      $('#success').html("");
+    }
+
+
+    if(!(diseasetype===''||eventtype===''||county===''||subcounty===''||location===''||callername===''||callernumber===''||datereported===''||description===''||actiontaken==='')){
+
+    // else{
+        $.ajax({
+         url:"/call_log_create_submit/",
+         type:"POST",
+         datatype:"json",
+         data:{disease_type:diseasetype,event_type:eventtype,county:county,subcounty:subcounty,location:location,caller_name:callername,caller_number:callernumber,date_reported:datereported,description:description,action_taken:actiontaken,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+
+            success:function(){
+                $('#success').html("success in submission");
+                $('#error').html("");
+                $('#diseasetype').val('');
+                $('#eventtype').val('');
+                $('#county').val('');
+                $('#location').val('');
+                $('#callername').val('');
+                $('#callernumber').val('');
+                $('#datereported').val('');
+                $('#description').val('');
+                $('#actiontaken').val('');
+                var options = '<option value="" selected disabled>select county</option>';
+                $('#subcounty').html(options);
+
+
+
+            },
+            error:function(){
+
+                $('#error').html("error in submission, try again");
+                $('#success').html("");
+
+            }
+        });
+      // }
+
+  }
+
+
+}
+
+    </script>
+{% endblock %}
